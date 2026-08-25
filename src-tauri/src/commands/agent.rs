@@ -22,6 +22,7 @@ pub const AGENT_PRESET_IDS: &[&str] = &[
     "claude-code-worktree",
     "claude-cli",
     "claude-cli-worktree",
+    "agy-agent",
     "codex-agent",
     "codex-agent-worktree",
     "codex-fugu",
@@ -217,6 +218,14 @@ fn agent_preset_metadata(id: &str) -> Option<Value> {
             "backend": "cli",
             "needsGitRepo": true,
         }),
+        "agy-agent" => json!({
+            "id": "agy-agent",
+            "name": "Antigravity Agent",
+            "icon": "✧",
+            "color": "#4285f4",
+            "suggested": true,
+            "backend": "agy",
+        }),
         "codex-agent" => json!({
             "id": "codex-agent",
             "name": "Codex Agent",
@@ -267,6 +276,7 @@ mod tests {
         assert!(AGENT_PRESET_IDS.contains(&"claude-code"));
         assert!(AGENT_PRESET_IDS.contains(&"claude-channel"));
         assert!(!AGENT_PRESET_IDS.contains(&"claude-code-v2"));
+        assert!(AGENT_PRESET_IDS.contains(&"agy-agent"));
         assert!(AGENT_PRESET_IDS.contains(&"codex-agent"));
         assert!(AGENT_PRESET_IDS.contains(&"codex-agent-worktree"));
         assert!(!AGENT_PRESET_IDS.contains(&"openai-agent"));
@@ -276,6 +286,7 @@ mod tests {
     fn supported_session_types_hide_debug_only_presets_without_debug() {
         let regular = agent_supported_session_type_ids_for_debug(false);
         assert!(regular.contains(&"claude-code"));
+        assert!(regular.contains(&"agy-agent"));
         assert!(!regular.contains(&"claude-channel"));
         assert!(!regular.contains(&"claude-cli-agent"));
 
@@ -296,6 +307,11 @@ mod tests {
     #[test]
     fn preset_metadata_contains_names_for_supported_ids() {
         let presets = agent_supported_session_presets_for_debug(false);
+        assert!(presets.iter().any(|preset| {
+            preset.get("id").and_then(Value::as_str) == Some("agy-agent")
+                && preset.get("name").and_then(Value::as_str) == Some("Antigravity Agent")
+                && preset.get("backend").and_then(Value::as_str) == Some("agy")
+        }));
         assert!(presets.iter().any(|preset| {
             preset.get("id").and_then(Value::as_str) == Some("codex-agent")
                 && preset.get("name").and_then(Value::as_str) == Some("Codex Agent")

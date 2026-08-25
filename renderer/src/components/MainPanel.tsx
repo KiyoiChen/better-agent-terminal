@@ -11,6 +11,7 @@ import { WorktreeMergedChip } from './WorktreeMergedChip'
 // Lazy load heavy components
 const ClaudeAgentPanel = lazy(() => import('./ClaudeAgentPanel').then(m => ({ default: m.ClaudeAgentPanel })))
 const CodexAgentPanel = lazy(() => import('./CodexAgentPanel').then(m => ({ default: m.CodexAgentPanel })))
+const AgyAgentPanel = lazy(() => import('./AgyAgentPanel').then(m => ({ default: m.AgyAgentPanel })))
 const ClaudeChannelAgentPanel = lazy(() => import('./ClaudeChannelAgentPanel').then(m => ({ default: m.ClaudeChannelAgentPanel })))
 const ClaudeCliAgentPanel = lazy(() => import('./ClaudeCliAgentPanel').then(m => ({ default: m.ClaudeCliAgentPanel })))
 const ClaudeCliPanel = lazy(() => import('./ClaudeCliPanel').then(m => ({ default: m.ClaudeCliPanel })))
@@ -32,6 +33,7 @@ export const MainPanel = memo(function MainPanel({ terminal, isActive, onClose, 
   const isAgent = terminal.agentPreset && terminal.agentPreset !== 'none'
   const isClaudeChannelAgent = terminal.agentPreset === 'claude-channel'
   const isClaudeCliAgent = terminal.agentPreset === 'claude-cli-agent'
+  const isAgyAgent = terminal.agentPreset === 'agy-agent'
   const isSdkManaged = terminal.agentPreset === 'claude-code' || terminal.agentPreset === 'claude-code-v2' || terminal.agentPreset === 'claude-code-worktree' || terminal.agentPreset === 'codex-agent' || terminal.agentPreset === 'codex-agent-worktree' || terminal.agentPreset === 'codex-fugu'
   const isClaudeCli = terminal.agentPreset === 'claude-cli' || terminal.agentPreset === 'claude-cli-worktree'
   const isCodexAgent = terminal.agentPreset === 'codex-agent' || terminal.agentPreset === 'codex-agent-worktree' || terminal.agentPreset === 'codex-fugu'
@@ -104,7 +106,7 @@ export const MainPanel = memo(function MainPanel({ terminal, isActive, onClose, 
             <span className="terminal-runtime-error-chip">Error</span>
           )}
         </div>
-        {(isClaudeCode || isClaudeChannelAgent || isClaudeCliAgent) && !isWorker && (
+        {(isClaudeCode || isClaudeChannelAgent || isClaudeCliAgent || isAgyAgent) && !isWorker && (
           <div className="msg-filter-bar" style={agentColorStyle}>
             <button
               className={`msg-filter-btn${showUserMsg ? ' active' : ''}`}
@@ -122,7 +124,7 @@ export const MainPanel = memo(function MainPanel({ terminal, isActive, onClose, 
               <span className="msg-filter-dot" style={{ background: 'var(--text-secondary)' }} />
               {t('claude.filterMessage')}
             </button>
-            {(isClaudeCode || isClaudeCliAgent) && (
+            {(isClaudeCode || isClaudeCliAgent || isAgyAgent) && (
               <>
                 <button
                   className={`msg-filter-btn${showToolMsg ? ' active' : ''}`}
@@ -149,7 +151,7 @@ export const MainPanel = memo(function MainPanel({ terminal, isActive, onClose, 
             terminalId={terminal.id}
             size="small"
           />
-          {isAgent && !isClaudeCode && !isClaudeChannelAgent && !isClaudeCliAgent && (
+          {isAgent && !isClaudeCode && !isClaudeChannelAgent && !isClaudeCliAgent && !isAgyAgent && (
             <button
               className={`action-btn ${showPromptBox ? 'active' : ''}`}
               onClick={() => setShowPromptBox(!showPromptBox)}
@@ -191,6 +193,18 @@ export const MainPanel = memo(function MainPanel({ terminal, isActive, onClose, 
               procfilePath={terminal.procfilePath!}
               cwd={terminal.cwd}
               isActive={isActive}
+            />
+          </Suspense>
+        ) : isAgyAgent ? (
+          <Suspense fallback={<div className="loading-panel" />}>
+            <AgyAgentPanel
+              terminal={terminal}
+              isActive={isActive}
+              workspaceId={workspaceId}
+              showUserMsg={showUserMsg}
+              showAssistantMsg={showAssistantMsg}
+              showToolMsg={showToolMsg}
+              showThinkingMsg={showThinkingMsg}
             />
           </Suspense>
         ) : isClaudeChannelAgent ? (
@@ -269,7 +283,7 @@ export const MainPanel = memo(function MainPanel({ terminal, isActive, onClose, 
           />
         )}
       </div>
-      {!isClaudeCode && !isClaudeChannelAgent && !isClaudeCliAgent && showPromptBox && (
+      {!isClaudeCode && !isClaudeChannelAgent && !isClaudeCliAgent && !isAgyAgent && showPromptBox && (
         <PromptBox terminalId={terminal.id} />
       )}
     </div>
