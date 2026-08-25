@@ -11,11 +11,11 @@ export interface AgentPreset {
   command?: string;       // 可選的自動啟動命令（PTY 模式用）
   debug?: boolean;        // 僅在 debug 模式下顯示
   suggested?: boolean;    // 標記為推薦選項
-  backend?: 'sdk' | 'channel' | 'cli' | 'pty';  // sdk = ClaudeAgentPanel, channel = Claude Channel Agent, cli = bundled CLI PTY, pty = generic PTY
+  backend?: 'sdk' | 'channel' | 'cli' | 'pty' | 'agy';  // agy = structured Antigravity stream-json panel
   needsGitRepo?: boolean; // 需要 git repo（worktree 類）
 }
 
-export type AgentPresetId = 'claude-code' | 'claude-channel' | 'claude-cli-agent' | 'claude-code-v2' | 'claude-code-worktree' | 'claude-cli' | 'claude-cli-worktree' | 'codex-agent' | 'codex-agent-worktree' | 'codex-fugu' | 'codex-cli' | 'none';
+export type AgentPresetId = 'claude-code' | 'claude-channel' | 'claude-cli-agent' | 'claude-code-v2' | 'claude-code-worktree' | 'claude-cli' | 'claude-cli-worktree' | 'agy-agent' | 'codex-agent' | 'codex-agent-worktree' | 'codex-fugu' | 'codex-cli' | 'none';
 
 export const AGENT_PRESETS: AgentPreset[] = [
   {
@@ -74,6 +74,14 @@ export const AGENT_PRESETS: AgentPreset[] = [
     color: '#22c55e',
     backend: 'cli',
     needsGitRepo: true,
+  },
+  {
+    id: 'agy-agent',
+    name: 'Antigravity Agent',
+    icon: '✧',
+    color: '#4285f4',
+    suggested: true,
+    backend: 'agy',
   },
   {
     id: 'codex-agent',
